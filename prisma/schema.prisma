@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String @unique
+  password String
+  account Account?
+  }
+
+model Account{
+  id Int @id @default(autoincrement())
+  balance Decimal @db.Decimal(10, 2) 
+  user User @relation(fields: [user_id],references: [id])
+  user_id Int @unique
+  purchase Purchase[] 
+}
+
+model Purchase{
+  id Int @id @default(autoincrement())
+  account Account @relation(fields: [account_id],references: [id])
+  account_id Int @unique
+  amount Int 
+}
