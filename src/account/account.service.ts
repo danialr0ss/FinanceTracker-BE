@@ -1,26 +1,18 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { AccountDto } from 'src/dto/account.dto';
+import { Injectable } from '@nestjs/common';
+import { Account } from '@prisma/client';
 import prisma from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
-  create(createAccountDto: AccountDto) {
-    return 'This action adds a new account';
+  updateBudget(accountId: number, newBalance: number): Promise<Account> {
+    return prisma.account.update({
+      where: { id: accountId },
+      data: { balance: newBalance },
+    });
   }
 
-  findAll() {
-    return `This action returns all account`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
-  }
-
-  updateBudget(newBudget: number): Promise<AccountDto> {
-    return null;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  // find many incase multiple account feature is added
+  getAllAccountWithUserId(id: number) {
+    return prisma.account.findMany({ where: { user_id: id } });
   }
 }
