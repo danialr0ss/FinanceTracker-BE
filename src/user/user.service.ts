@@ -10,7 +10,7 @@ import prisma from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  async getUserByName(name: string): Promise<User> {
+  async findByName(name: string): Promise<User> {
     try {
       return await prisma.user.findUnique({
         where: {
@@ -24,7 +24,7 @@ export class UserService {
     }
   }
 
-  async register(user: UserDto): Promise<Omit<User, 'password'>> {
+  async createUser(user: UserDto): Promise<Omit<User, 'password'>> {
     const { name } = user;
 
     const foundUser = await prisma.user

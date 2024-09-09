@@ -15,7 +15,7 @@ export class AuthController {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() user: UserDto): Promise<Token> {
-    const result = await this.authService.generateToken(user);
+    const result = await this.authService.createToken(user);
     return { token: result };
   }
 }

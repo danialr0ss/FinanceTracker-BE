@@ -19,8 +19,8 @@ export class AuthService {
   ) {}
 
   // create token for users who are allowed to sign in
-  async generateToken(user: UserDto): Promise<string> {
-    const foundUser = await this.userService.getUserByName(user.name);
+  async createToken(user: UserDto): Promise<string> {
+    const foundUser = await this.userService.findByName(user.name);
 
     if (!foundUser) {
       throw new UnauthorizedException('Incorrect Credentials');
@@ -47,7 +47,7 @@ export class AuthService {
 
   // if token is valid, signed item will be returned, if not error will occur
   //used to check if user is logged in
-  async getPayloadFromToken(token: string): Promise<Omit<User, 'password'>> {
+  async getJwtPayload(token: string): Promise<Omit<User, 'password'>> {
     try {
       const { user } = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),

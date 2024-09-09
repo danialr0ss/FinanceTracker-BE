@@ -36,11 +36,11 @@ export class PurchaseService {
     }
   }
 
-  update(id: number, purchaseDto: PurchaseDto) {
-    return `This action updates a #${id} purchase`;
-  }
+  // update(id: number, purchaseDto: PurchaseDto) {
+  //   return `This action updates a #${id} purchase`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} purchase`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} purchase`;
+  // }
 }

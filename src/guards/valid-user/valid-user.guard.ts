@@ -24,7 +24,7 @@ export class ValidUserGuard implements CanActivate {
 
     try {
       //if payload can be received means the token is valid
-      await this.authService.getPayloadFromToken(token);
+      await this.authService.getJwtPayload(token);
     } catch (err) {
       throw new UnauthorizedException(err);
     }

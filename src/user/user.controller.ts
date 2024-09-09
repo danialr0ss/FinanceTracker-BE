@@ -28,7 +28,7 @@ export class UserController {
     }),
   )
   async create(@Body() user: UserDto): Promise<Omit<User, 'password'>> {
-    return this.userService.register(user);
+    return this.userService.createUser(user);
   }
 
   // @Get()

@@ -37,13 +37,13 @@ export class AccountController {
     //validate if user has ownership
     const token = header.split(' ')[1];
     const { balance, user_id } = account;
-    const user = await this.authService.getPayloadFromToken(token);
+    const user = await this.authService.getJwtPayload(token);
     if (user.id !== user_id) {
       throw new UnauthorizedException(
         'Updates can only be done to accounts linked to user',
       );
     }
 
-    return this.accountService.updateBudget(user_id, balance);
+    return this.accountService.updateBalance(user_id, balance);
   }
 }
