@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class AccountDto {
+export class PurchaseDto {
   @IsNumber()
   @IsNotEmpty()
-  balance: number;
+  amount: number;
 
   @IsNumber()
   @IsNotEmpty()
-  user_id: number;
+  account_id: number;
 }

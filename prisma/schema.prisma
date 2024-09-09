@@ -33,4 +33,5 @@ model Purchase{
   account Account @relation(fields: [account_id],references: [id])
   account_id Int @unique
   amount Int 
+  date DateTime @default(now())
 }

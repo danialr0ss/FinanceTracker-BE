@@ -23,7 +23,13 @@ export class AccountController {
 
   @Patch('/update-balance')
   @UseGuards(ValidUserGuard)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async update(
     @Body() account: AccountDto,
     @Headers('authorization') header: string,
