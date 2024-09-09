@@ -31,7 +31,8 @@ model Account{
 model Purchase{
   id Int @id @default(autoincrement())
   account Account @relation(fields: [account_id],references: [id])
-  account_id Int @unique
-  amount Int 
+  account_id Int 
+  amount Decimal @db.Decimal(10, 2) 
   date DateTime @default(now())
+  category String 
 }

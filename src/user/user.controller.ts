@@ -14,6 +14,7 @@ import { User } from '@prisma/client';
 import { UserDto } from '../dto/user.dto';
 import { Response } from '../common/interfaces/response';
 import { AccountDto } from 'src/dto/account.dto';
+import { UserAccountDto } from 'src/dto/user.account.dto';
 
 @Controller('user')
 export class UserController {
@@ -23,12 +24,14 @@ export class UserController {
   @UsePipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
     }),
   )
-  async create(@Body() user: UserDto): Promise<Omit<User, 'password'>> {
-    return this.userService.createUser(user);
+  async create(
+    @Body() userAndAccount: UserAccountDto,
+  ): Promise<Omit<User, 'password'>> {
+    console.log(userAndAccount);
+    const { user, account } = userAndAccount;
+    return this.userService.createUser(user, account);
   }
 
   // @Get()

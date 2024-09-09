@@ -1,9 +1,10 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class AccountDto {
   @IsNumber()
   @IsNotEmpty()
-  balance: number;
+  balance: Decimal;
 
   @IsNumber()
   @IsNotEmpty()

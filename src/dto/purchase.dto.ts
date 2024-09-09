@@ -1,11 +1,16 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Decimal } from '@prisma/client/runtime/library';
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 export class PurchaseDto {
-  @IsNumber()
+  @IsPositive()
   @IsNotEmpty()
-  amount: number;
+  amount: Decimal;
 
   @IsNumber()
   @IsNotEmpty()
   account_id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  category: string;
 }

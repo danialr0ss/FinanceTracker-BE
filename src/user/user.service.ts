@@ -1,12 +1,13 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserDto } from '../dto/user.dto';
-import { PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { hashPassword } from 'src/utils/utils';
 import prisma from 'src/prisma/prisma.service';
+import { AccountDto } from 'src/dto/account.dto';
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,10 @@ export class UserService {
     }
   }
 
-  async createUser(user: UserDto): Promise<Omit<User, 'password'>> {
+  async createUser(
+    user: UserDto,
+    account: AccountDto,
+  ): Promise<Omit<User, 'password'>> {
     const { name } = user;
 
     const foundUser = await prisma.user
@@ -44,7 +48,9 @@ export class UserService {
     user.password = await hashPassword(user.password);
 
     const createdUser = await prisma.user
-      .create({ data: { ...user, account: { create: { balance: 0 } } } })
+      .create({
+        data: { ...user, account: { create: { balance: account.balance } } },
+      })
       .catch((err) => {
         console.log(err);
         throw new InternalServerErrorException(
