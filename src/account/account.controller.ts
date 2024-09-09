@@ -12,7 +12,7 @@ import { AccountService } from './account.service';
 import { Account } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
-import { OwnershipGuard } from 'src/guards/ownership/ownership.guard';
+import { AccountDto } from 'src/dto/account.dto';
 
 @Controller('account')
 export class AccountController {
@@ -23,16 +23,21 @@ export class AccountController {
 
   @Patch('/update-balance')
   @UseGuards(ValidUserGuard)
-  @UseGuards(OwnershipGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   async update(
-    @Body() balance: string,
+    @Body() account: AccountDto,
     @Headers('authorization') header: string,
   ): Promise<Account> {
+    //validate if user has ownership
     const token = header.split(' ')[1];
+    const { balance, user_id } = account;
     const user = await this.authService.getPayloadFromToken(token);
+    if (user.id !== user_id) {
+      throw new UnauthorizedException(
+        'Updates can only be done to accounts linked to user',
+      );
+    }
 
-    //this.accountService.updateBudget(accountId, balance);
-    return;
+    return this.accountService.updateBudget(user_id, balance);
   }
 }

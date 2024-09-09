@@ -4,9 +4,9 @@ import prisma from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
-  updateBudget(accountId: number, newBalance: number): Promise<Account> {
+  updateBudget(userId: number, newBalance: number): Promise<Account> {
     return prisma.account.update({
-      where: { id: accountId },
+      where: { user_id: userId },
       data: { balance: newBalance },
     });
   }
