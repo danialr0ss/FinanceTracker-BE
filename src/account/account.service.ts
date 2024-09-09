@@ -1,18 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Account } from '@prisma/client';
 import prisma from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
-  updateBudget(userId: number, newBalance: number): Promise<Account> {
-    return prisma.account.update({
-      where: { user_id: userId },
-      data: { balance: newBalance },
-    });
+  async updateBudget(userId: number, newBalance: number): Promise<Account> {
+    try {
+      return await prisma.account.update({
+        where: { user_id: userId },
+        data: { balance: newBalance },
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Something went wrong with Prisma',
+      );
+    }
   }
 
   // find many incase multiple account feature is added
-  getAllAccountWithUserId(id: number) {
-    return prisma.account.findMany({ where: { user_id: id } });
+  async getAllAccountWithUserId(id: number) {
+    try {
+      return await prisma.account.findMany({ where: { user_id: id } });
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Something went wrong with Prisma',
+      );
+    }
   }
 }

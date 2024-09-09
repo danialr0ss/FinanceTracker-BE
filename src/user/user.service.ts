@@ -10,22 +10,32 @@ import prisma from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  private prisma = new PrismaClient();
-
   async getUserByName(name: string): Promise<User> {
-    return this.prisma.user.findUnique({
-      where: {
-        name: name,
-      },
-    });
+    try {
+      return await prisma.user.findUnique({
+        where: {
+          name: name,
+        },
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Something went wrong with Prisma',
+      );
+    }
   }
 
   async register(user: UserDto): Promise<Omit<User, 'password'>> {
     const { name } = user;
 
-    const foundUser = await prisma.user.findUnique({
-      where: { name: name },
-    });
+    const foundUser = await prisma.user
+      .findUnique({
+        where: { name: name },
+      })
+      .catch((err) => {
+        throw new InternalServerErrorException(
+          'Something went wrong with Prisma, Error searching user',
+        );
+      });
 
     if (foundUser) {
       throw new BadRequestException(`User with name : ${name} already exists`);
@@ -38,7 +48,7 @@ export class UserService {
       .catch((err) => {
         console.log(err);
         throw new InternalServerErrorException(
-          'Something went wrong with Prisma',
+          'Something went wrong with Prisma, Error creating user',
         );
       });
 
