@@ -5,19 +5,20 @@ import {
 } from '@nestjs/common';
 import { Purchase } from '@prisma/client';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
-import { PurchaseDto } from 'src/dto/purchase.dto';
+import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
 import prisma from 'src/prisma/prisma.service';
 import { Decimal } from '@prisma/client/runtime/library';
+import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
 
 @Injectable()
 export class PurchaseService {
-  async create(purchase: PurchaseDto): Promise<Purchase> {
-    const category = purchase.category;
+  async create(createPurchaseDto: CreatePurchaseDto): Promise<Purchase> {
+    const category = createPurchaseDto.category;
     try {
       return await prisma.purchase.create({
         data: {
-          amount: purchase.amount,
-          account_id: purchase.account_id,
+          amount: createPurchaseDto.amount,
+          account_id: createPurchaseDto.account_id,
           category: category[0].toUpperCase() + category.substring(1),
         },
       });
@@ -102,9 +103,20 @@ export class PurchaseService {
     }
   }
 
-  // update(id: number, purchaseDto: PurchaseDto) {
-  //   return `This action updates a #${id} purchase`;
-  // }
+  async update(id: number, updatePurchaseDto: UpdatePurchaseDto) {
+    try {
+      return await prisma.purchase.update({
+        where: { id: id },
+        data: { ...updatePurchaseDto },
+      });
+    } catch (err) {
+      console.log(err);
+      throw new InternalServerErrorException(
+        'Something went wrong with Prisma',
+        err,
+      );
+    }
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} purchase`;

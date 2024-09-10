@@ -1,20 +1,20 @@
 import {
   Controller,
-  Get,
+  //Get,
   Post,
   Body,
-  Param,
-  NotFoundException,
+  //Param,
+  //NotFoundException,
   ValidationPipe,
   UsePipes,
-  Put,
+  //Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
-import { UserDto } from '../dto/user.dto';
-import { Response } from '../common/interfaces/response';
-import { AccountDto } from 'src/dto/account.dto';
-import { UserAccountDto } from 'src/dto/user.account.dto';
+// import { UserDto } from '../dto/user.dto';
+// import { DataResponse } from '../common/interfaces/dataResponse';
+// import { AccountDto } from 'src/dto/account.dto';
+import { UserAccountDto } from 'src/dto/user-account.dto';
 
 @Controller('user')
 export class UserController {

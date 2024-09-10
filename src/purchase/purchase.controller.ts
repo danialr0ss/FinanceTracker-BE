@@ -15,7 +15,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
-import { PurchaseDto } from 'src/dto/purchase.dto';
+import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
 import { Purchase } from '@prisma/client';
 import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
 import { AuthService } from 'src/auth/auth.service';
@@ -23,6 +23,8 @@ import { AccountService } from 'src/account/account.service';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
 import { parse } from 'querystring';
+import { Validator } from 'class-validator';
+import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
 
 @Controller('purchase')
 export class PurchaseController {
@@ -42,24 +44,24 @@ export class PurchaseController {
     }),
   )
   async create(
-    @Body() purchaseDto: PurchaseDto,
+    @Body() createPurchaseDto: CreatePurchaseDto,
     @Headers('authorization') headers,
   ): Promise<PurchaseResponse> {
     const token = headers.split(' ')[1];
     const { id: userId } = await this.authService.getJwtPayload(token);
     const { id: accountId } = await this.accountService.findByUserId(userId);
 
-    if (accountId !== purchaseDto.account_id) {
+    if (accountId !== createPurchaseDto.account_id) {
       throw new UnauthorizedException(
         'Purchases can only be added to accounts linked to user',
       );
     }
 
-    await this.purchaseService.create(purchaseDto);
+    await this.purchaseService.create(createPurchaseDto);
     const purchases = await this.purchaseService.findAllByAccountId(accountId);
     const { balance } = await this.accountService.findByUserId(userId);
 
-    const newBalance = balance.minus(purchaseDto.amount);
+    const newBalance = balance.minus(createPurchaseDto.amount);
     this.accountService.updateBalance(userId, newBalance);
 
     return { purchases: purchases, balance: newBalance };
@@ -71,7 +73,7 @@ export class PurchaseController {
     @Param('id', ParseIntPipe) id: number,
     @Param('month', ParseIntPipe) month: number,
     @Param('year', ParseIntPipe) year: number,
-  ) {
+  ): Promise<PurchaseResponse> {
     if (month > 12) {
       throw new BadRequestException(
         'Month must be between 1 (January) to 12 (December)',
@@ -102,10 +104,22 @@ export class PurchaseController {
   //   return this.purchaseService.findOne(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() purchaseDto: PurchaseDto) {
-  //   return this.purchaseService.update(+id, purchaseDto);
-  // }
+  @Patch(':id')
+  @UseGuards(ValidUserGuard)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePurchaseDto: UpdatePurchaseDto,
+  ): Promise<Purchase> {
+    console.log(updatePurchaseDto);
+    return this.purchaseService.update(id, updatePurchaseDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

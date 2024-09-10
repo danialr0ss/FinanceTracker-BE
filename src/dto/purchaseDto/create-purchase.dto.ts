@@ -1,7 +1,7 @@
 import { Decimal } from '@prisma/client/runtime/library';
 import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
-export class PurchaseDto {
+export class CreatePurchaseDto {
   @IsPositive()
   @IsNotEmpty()
   amount: Decimal;
