@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -9,11 +10,13 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { comparePassword, hashPassword } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
+import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly accountService: AccountService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -56,5 +59,23 @@ export class AuthService {
     } catch (err) {
       throw new UnauthorizedException(err);
     }
+  }
+
+  // user can only CRUD records linked to their account
+  async checkUserAccess(
+    token: string,
+    requestAccountId: number,
+  ): Promise<boolean> {
+    const { id: userId } = await this.getJwtPayload(token);
+    const { id: responseAccountId } =
+      await this.accountService.findByUserId(userId);
+
+    if (responseAccountId !== requestAccountId) {
+      throw new ForbiddenException(
+        'CRUD can only be done to accounts linked to user',
+      );
+    }
+
+    return true;
   }
 }

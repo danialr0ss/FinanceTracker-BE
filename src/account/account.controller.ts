@@ -36,7 +36,7 @@ export class AccountController {
   ): Promise<Account> {
     //validate if user has ownership
     const token = header.split(' ')[1];
-    const { balance, user_id } = account;
+    const { balance, id, user_id } = account;
     const user = await this.authService.getJwtPayload(token);
     if (user.id !== user_id) {
       throw new UnauthorizedException(
@@ -44,6 +44,6 @@ export class AccountController {
       );
     }
 
-    return this.accountService.updateBalance(user_id, balance);
+    return this.accountService.updateBalance(id, balance);
   }
 }

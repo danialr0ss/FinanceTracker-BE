@@ -7,6 +7,7 @@ import {
   //NotFoundException,
   ValidationPipe,
   UsePipes,
+  Put,
   //Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';

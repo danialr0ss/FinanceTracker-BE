@@ -46,25 +46,16 @@ export class PurchaseController {
   async create(
     @Body() createPurchaseDto: CreatePurchaseDto,
     @Headers('authorization') headers,
-  ): Promise<PurchaseResponse> {
+  ): Promise<Purchase> {
+    const accountId = createPurchaseDto.account_id;
     const token = headers.split(' ')[1];
-    const { id: userId } = await this.authService.getJwtPayload(token);
-    const { id: accountId } = await this.accountService.findByUserId(userId);
-
-    if (accountId !== createPurchaseDto.account_id) {
-      throw new UnauthorizedException(
-        'Purchases can only be added to accounts linked to user',
-      );
-    }
-
-    await this.purchaseService.create(createPurchaseDto);
-    const purchases = await this.purchaseService.findAllByAccountId(accountId);
-    const { balance } = await this.accountService.findByUserId(userId);
-
+    // check if user can do actions to the record
+    await this.authService.checkUserAccess(token, accountId);
+    const { balance } = await this.accountService.findById(accountId);
     const newBalance = balance.minus(createPurchaseDto.amount);
-    this.accountService.updateBalance(userId, newBalance);
+    this.accountService.updateBalance(accountId, newBalance);
 
-    return { purchases: purchases, balance: newBalance };
+    return await this.purchaseService.create(createPurchaseDto);
   }
 
   @Get(':id/:month/:year')
@@ -99,11 +90,6 @@ export class PurchaseController {
     return this.purchaseService.findAllByCategory(id, category);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.purchaseService.findOne(+id);
-  // }
-
   @Patch(':id')
   @UseGuards(ValidUserGuard)
   @UsePipes(
@@ -117,7 +103,6 @@ export class PurchaseController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePurchaseDto: UpdatePurchaseDto,
   ): Promise<Purchase> {
-    console.log(updatePurchaseDto);
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
