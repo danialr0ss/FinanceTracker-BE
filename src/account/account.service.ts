@@ -1,23 +1,30 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Account, Purchase } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime/library';
+import Decimal from 'decimal.js';
 import prisma from 'src/prisma/prisma.service';
 import { PurchaseService } from 'src/purchase/purchase.service';
-
 @Injectable()
 export class AccountService {
   constructor(private readonly purchaseService: PurchaseService) {}
 
   async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
+    let totalAmount = new Decimal(0);
+    const purchases = await this.purchaseService.findAllByAccountId(id);
+    for (const purchase of purchases) {
+      totalAmount = totalAmount.plus(purchase.amount);
+    }
+    const newTotal = newBalance.minus(totalAmount);
     try {
       return await prisma.account.update({
         where: { id: id },
-        data: { balance: newBalance },
+        data: { balance: newTotal },
       });
     } catch (err) {
-      throw new InternalServerErrorException(
-        'Something went wrong with Prisma',
-      );
+      throw new InternalServerErrorException(err);
     }
   }
 
@@ -90,7 +97,7 @@ export class AccountService {
     }
     console.log(result);
 
-    //change to json format to send to user
+    // change to json format to send to user
     const formattedResult = [];
 
     for (const key of result.keys()) {

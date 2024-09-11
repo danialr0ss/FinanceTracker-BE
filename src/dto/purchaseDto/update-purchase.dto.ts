@@ -1,4 +1,4 @@
-import { Decimal } from '@prisma/client/runtime/library';
+import Decimal from 'decimal.js';
 import { Type } from 'class-transformer';
 import {
   IsOptional,

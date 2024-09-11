@@ -5,13 +5,11 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UsePipes,
   ValidationPipe,
   BadRequestException,
   UseGuards,
   Headers,
-  UnauthorizedException,
   ParseIntPipe,
 } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
@@ -20,10 +18,7 @@ import { Purchase } from '@prisma/client';
 import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { AccountService } from 'src/account/account.service';
-import { Decimal } from '@prisma/client/runtime/library';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
-import { parse } from 'querystring';
-import { Validator } from 'class-validator';
 import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
 
 @Controller('purchase')

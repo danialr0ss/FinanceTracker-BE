@@ -46,6 +46,7 @@ export class AccountController {
     }
     return this.accountService.updateBalance(id, balance);
   }
+
   @Get('/breakdown')
   @UseGuards(ValidUserGuard)
   async generateAccountBreakdown(@Headers('authorization') header: string) {

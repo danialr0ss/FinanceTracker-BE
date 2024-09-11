@@ -1,11 +1,13 @@
-import { Decimal } from '@prisma/client/runtime/library';
+import Decimal from 'decimal.js';
 import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class AccountDto {
   id?: number;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => new Decimal(value))
   balance: Decimal;
 
   @IsNumber()
