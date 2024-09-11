@@ -7,6 +7,7 @@ import {
   ValidationPipe,
   UsePipes,
   UnauthorizedException,
+  Get,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { Account } from '@prisma/client';
@@ -43,7 +44,13 @@ export class AccountController {
         'Updates can only be done to accounts linked to user',
       );
     }
-
     return this.accountService.updateBalance(id, balance);
+  }
+  @Get('/breakdown')
+  @UseGuards(ValidUserGuard)
+  async generateAccountBreakdown(@Headers('authorization') header: string) {
+    const token = header.split(' ')[1];
+    const { id: userId } = await this.authService.getJwtPayload(token);
+    return this.accountService.generateMonthlyBreakdown(userId);
   }
 }

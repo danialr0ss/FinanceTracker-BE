@@ -1,12 +1,6 @@
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Account, Purchase } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
-import { Breakdown } from 'src/common/interfaces/breakdown';
-import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
 import prisma from 'src/prisma/prisma.service';
 import { PurchaseService } from 'src/purchase/purchase.service';
 
@@ -62,14 +56,17 @@ export class AccountService {
     > = new Map();
 
     for (const purchase of purchases) {
-      const monthYear = `${purchase.date.getMonth()} ${purchase.date.getFullYear()}`;
+      const monthYear = `${purchase.date.getMonth()}-${purchase.date.getFullYear()}`;
+
       if (result.has(monthYear)) {
         const monthlyPurchases = result.get(monthYear).purchases;
 
         if (monthlyPurchases.has(purchase.category)) {
           const categoryPurchases = monthlyPurchases.get(purchase.category);
           categoryPurchases.purchases.push(purchase);
-          categoryPurchases.total.add(purchase.amount);
+          categoryPurchases.total = categoryPurchases.total.add(
+            purchase.amount,
+          );
         } else {
           monthlyPurchases.set(purchase.category, {
             purchases: [purchase],
@@ -83,7 +80,7 @@ export class AccountService {
               purchase.category,
               {
                 purchases: [purchase],
-                total: new Decimal(0),
+                total: new Decimal(purchase.amount),
               },
             ],
           ]),
@@ -91,8 +88,26 @@ export class AccountService {
         });
       }
     }
+    console.log(result);
 
-    return result;
+    //change to json format to send to user
+    const formattedResult = [];
+
+    for (const key of result.keys()) {
+      const balance = result.get(key).balance;
+      const categories = result.get(key).purchases;
+      for (const category of categories.keys()) {
+        const monthlySpending = {
+          date: key, // key is the monthYear,
+          category: category,
+          purchases: categories.get(category).purchases,
+          total: categories.get(category).total,
+          balance: balance,
+        };
+        formattedResult.push(monthlySpending);
+      }
+    }
+    return formattedResult;
   }
 
   // find many incase multiple account feature is added
