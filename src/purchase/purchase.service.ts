@@ -2,6 +2,9 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { Purchase } from '@prisma/client';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
@@ -9,9 +12,17 @@ import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
 import prisma from 'src/prisma/prisma.service';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class PurchaseService {
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+    @Inject(forwardRef(() => AccountService))
+    private readonly accountService: AccountService,
+  ) {}
   async create(createPurchaseDto: CreatePurchaseDto): Promise<Purchase> {
     const category = createPurchaseDto.category;
     try {
@@ -45,6 +56,7 @@ export class PurchaseService {
     try {
       return await prisma.purchase.findUnique({ where: { id: id } });
     } catch (err) {
+      console.log(err);
       throw new InternalServerErrorException(
         'Something went wrong with Prisma',
       );
@@ -118,7 +130,27 @@ export class PurchaseService {
     }
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} purchase`;
-  // }
+  async delete(id: number) {
+    try {
+      return await prisma.purchase.delete({ where: { id: id } });
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Something went wrong with Prisma',
+        err,
+      );
+    }
+  }
+
+  async verifyPermission(authHeader: string, purchaseId: number) {
+    const token = authHeader.split(' ')[1];
+    const { id: userId } = await this.authService.getJwtPayload(token);
+    const { id: accountId } = await this.accountService.findByUserId(userId);
+    const purchase = await this.findById(purchaseId);
+
+    if (purchase.account_id != accountId) {
+      throw new ForbiddenException(
+        'Requests can only be made by users who owns the purchase',
+      );
+    }
+  }
 }

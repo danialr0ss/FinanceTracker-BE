@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { AccountModule } from './account/account.module';
 import { PurchaseModule } from './purchase/purchase.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

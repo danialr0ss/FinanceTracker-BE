@@ -11,6 +11,7 @@ import {
   UseGuards,
   Headers,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
 import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
@@ -101,8 +102,8 @@ export class PurchaseController {
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.purchaseService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.purchaseService.delete(id);
+  }
 }

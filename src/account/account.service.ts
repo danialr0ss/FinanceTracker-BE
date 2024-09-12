@@ -1,11 +1,19 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Account, Purchase } from '@prisma/client';
 import Decimal from 'decimal.js';
 import prisma from 'src/prisma/prisma.service';
 import { PurchaseService } from 'src/purchase/purchase.service';
 @Injectable()
 export class AccountService {
-  constructor(private readonly purchaseService: PurchaseService) {}
+  constructor(
+    @Inject(forwardRef(() => PurchaseService))
+    private readonly purchaseService: PurchaseService,
+  ) {}
 
   async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
     newBalance = new Decimal(newBalance); //explicitly make balance to decimal

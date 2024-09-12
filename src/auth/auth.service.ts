@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -16,6 +18,7 @@ import { AccountService } from 'src/account/account.service';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    @Inject(forwardRef(() => AccountService))
     private readonly accountService: AccountService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,

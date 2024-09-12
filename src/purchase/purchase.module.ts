@@ -1,19 +1,13 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
 import { PurchaseController } from './purchase.controller';
-import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import { AccountService } from 'src/account/account.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { AccountModule } from 'src/account/account.module';
 
 @Module({
+  imports: [forwardRef(() => AuthModule), forwardRef(() => AccountModule)],
   controllers: [PurchaseController],
-  providers: [
-    PurchaseService,
-    AuthService,
-    UserService,
-    JwtService,
-    AccountService,
-  ],
+  providers: [PurchaseService],
+  exports: [PurchaseService],
 })
 export class PurchaseModule {}
