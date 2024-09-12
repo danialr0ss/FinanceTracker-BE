@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Account, Purchase } from '@prisma/client';
 import Decimal from 'decimal.js';
 import prisma from 'src/prisma/prisma.service';
@@ -12,6 +8,7 @@ export class AccountService {
   constructor(private readonly purchaseService: PurchaseService) {}
 
   async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
+    newBalance = new Decimal(newBalance); //explicitly make balance to decimal
     let totalAmount = new Decimal(0);
     const purchases = await this.purchaseService.findAllByAccountId(id);
     for (const purchase of purchases) {

@@ -1,12 +1,6 @@
 import Decimal from 'decimal.js';
 import { Type } from 'class-transformer';
-import {
-  IsOptional,
-  IsPositive,
-  IsDate,
-  IsString,
-  isDate,
-} from 'class-validator';
+import { IsOptional, IsPositive, IsDate, IsString } from 'class-validator';
 
 export class UpdatePurchaseDto {
   @IsOptional()

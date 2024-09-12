@@ -46,13 +46,14 @@ export class UserService {
     }
 
     user.password = await hashPassword(user.password);
-
     const createdUser = await prisma.user
       .create({
-        data: { ...user, account: { create: { balance: account.balance } } },
+        data: {
+          ...user,
+          account: { create: { balance: account.balance.toString() } },
+        },
       })
       .catch((err) => {
-        console.log(err);
         throw new InternalServerErrorException(
           'Something went wrong with Prisma, Error creating user',
         );

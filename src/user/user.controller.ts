@@ -30,7 +30,6 @@ export class UserController {
   async create(
     @Body() userAndAccount: UserAccountDto,
   ): Promise<Omit<User, 'password'>> {
-    console.log(userAndAccount);
     const { user, account } = userAndAccount;
     return this.userService.createUser(user, account);
   }

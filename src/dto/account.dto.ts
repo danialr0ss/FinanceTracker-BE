@@ -1,13 +1,11 @@
 import Decimal from 'decimal.js';
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 
 export class AccountDto {
   id?: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  @Transform(({ value }) => new Decimal(value))
+  @IsPositive()
   balance: Decimal;
 
   @IsNumber()
