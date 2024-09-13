@@ -54,17 +54,13 @@ export class PurchaseController {
     return await this.purchaseService.create(createPurchaseDto);
   }
 
-  @Get(':id/:month/:year')
+  @Get(':month/:year')
   @UseGuards(ValidUserGuard)
   async findAllByMonth(
     @Headers('authorization') header: string,
-    @Param('id', ParseIntPipe) id: number,
     @Param('month', ParseIntPipe) month: number,
     @Param('year', ParseIntPipe) year: number,
   ): Promise<PurchaseResponse> {
-    //check if user has permission to do action
-    await this.purchaseService.verifyPermission(header, id);
-
     if (month > 12) {
       throw new BadRequestException(
         'Month must be between 1 (January) to 12 (December)',
@@ -78,19 +74,20 @@ export class PurchaseController {
       );
     }
 
-    return this.purchaseService.findAllByMonth(id, month, year);
+    const { id: accountId } = await this.accountService.findAccount(header);
+    return this.purchaseService.findAllByMonth(accountId, month, year);
   }
 
-  @Get(':id/:category')
+  @Get(':category')
   @UseGuards(ValidUserGuard)
   async findAllByCategory(
     @Headers('authorization') header: string,
-    @Param('id', ParseIntPipe) id: number,
     @Param('category') category: string,
   ) {
     //check if user has permission to do action
-    await this.purchaseService.verifyPermission(header, id);
-    return this.purchaseService.findAllByCategory(id, category);
+    // await this.purchaseService.verifyPermission(header, id);
+    const { id: accountId } = await this.accountService.findAccount(header);
+    return this.purchaseService.findAllByCategory(accountId, category);
   }
 
   @Patch(':id')
@@ -108,7 +105,7 @@ export class PurchaseController {
     @Body() updatePurchaseDto: UpdatePurchaseDto,
   ): Promise<Purchase> {
     //check if user has permission to do action
-    await this.purchaseService.verifyPermission(header, id);
+    // await this.purchaseService.verifyPermission(header, id);
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
@@ -119,7 +116,7 @@ export class PurchaseController {
     @Headers('authorization') header: string,
   ) {
     //check if user has permission to do action
-    await this.purchaseService.verifyPermission(header, id);
+    // await this.purchaseService.verifyPermission(header, id);
     return this.purchaseService.delete(id);
   }
 }

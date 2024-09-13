@@ -140,20 +140,4 @@ export class PurchaseService {
       );
     }
   }
-
-  async verifyPermission(authHeader: string, purchaseId: number) {
-    const token = authHeader.split(' ')[1];
-    const { id: userId } = await this.authService.getJwtPayload(token);
-    console.log('userId :', userId);
-    const { id: accountId } = await this.accountService.findByUserId(userId);
-    console.log('accountId :', accountId);
-    const purchase = await this.findById(purchaseId);
-    console.log('purchase :', purchase);
-
-    if (purchase.account_id != accountId) {
-      throw new ForbiddenException(
-        'Requests can only be made by users who owns the purchase',
-      );
-    }
-  }
 }
