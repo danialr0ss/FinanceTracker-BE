@@ -140,4 +140,16 @@ export class PurchaseService {
       );
     }
   }
+
+  // user can only update and delete purchase in thier account
+  async verifyAccess(header: string, purchaseId: number) {
+    const { id: userAccountId } = await this.accountService.findAccount(header);
+    const { account_id: purchaseAccountId } = await this.findById(purchaseId);
+
+    if (userAccountId !== purchaseAccountId) {
+      throw new ForbiddenException(
+        'Update or removal of purchase can only be done by owner',
+      );
+    }
+  }
 }

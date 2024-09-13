@@ -84,8 +84,6 @@ export class PurchaseController {
     @Headers('authorization') header: string,
     @Param('category') category: string,
   ) {
-    //check if user has permission to do action
-    // await this.purchaseService.verifyPermission(header, id);
     const { id: accountId } = await this.accountService.findAccount(header);
     return this.purchaseService.findAllByCategory(accountId, category);
   }
@@ -104,8 +102,7 @@ export class PurchaseController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePurchaseDto: UpdatePurchaseDto,
   ): Promise<Purchase> {
-    //check if user has permission to do action
-    // await this.purchaseService.verifyPermission(header, id);
+    await this.purchaseService.verifyAccess(header, id);
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
@@ -115,8 +112,7 @@ export class PurchaseController {
     @Param('id', ParseIntPipe) id: number,
     @Headers('authorization') header: string,
   ) {
-    //check if user has permission to do action
-    // await this.purchaseService.verifyPermission(header, id);
+    await this.purchaseService.verifyAccess(header, id);
     return this.purchaseService.delete(id);
   }
 }
