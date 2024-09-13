@@ -45,7 +45,7 @@ export class PurchaseController {
   ): Promise<Purchase> {
     const accountId = createPurchaseDto.account_id;
     const token = headers.split(' ')[1];
-    // check if user can do actions to the record
+    // check if user is adding to their own account
     await this.authService.checkUserAccess(token, accountId);
     const { balance } = await this.accountService.findById(accountId);
     const newBalance = balance.minus(createPurchaseDto.amount);
@@ -113,6 +113,7 @@ export class PurchaseController {
   }
 
   @Delete(':id')
+  @UseGuards(ValidUserGuard)
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @Headers('authorization') header: string,

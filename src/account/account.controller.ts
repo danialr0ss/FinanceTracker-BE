@@ -8,6 +8,8 @@ import {
   UsePipes,
   UnauthorizedException,
   Get,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { Account } from '@prisma/client';
@@ -21,6 +23,12 @@ export class AccountController {
     private readonly accountService: AccountService,
     private readonly authService: AuthService,
   ) {}
+
+  @Get()
+  @UseGuards(ValidUserGuard)
+  async findAccount(@Headers('authorization') header: string) {
+    return this.accountService.findAccount(header);
+  }
 
   @Patch('/update-balance')
   @UseGuards(ValidUserGuard)

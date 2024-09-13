@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Account, Purchase } from '@prisma/client';
 import Decimal from 'decimal.js';
+import { AuthService } from 'src/auth/auth.service';
 import prisma from 'src/prisma/prisma.service';
 import { PurchaseService } from 'src/purchase/purchase.service';
 @Injectable()
@@ -13,6 +14,9 @@ export class AccountService {
   constructor(
     @Inject(forwardRef(() => PurchaseService))
     private readonly purchaseService: PurchaseService,
+
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
@@ -120,6 +124,12 @@ export class AccountService {
       }
     }
     return formattedResult;
+  }
+
+  async findAccount(authHeader: string) {
+    const token = authHeader.split(' ')[1];
+    const { id: userId } = await this.authService.getJwtPayload(token);
+    return this.findByUserId(userId);
   }
 
   // find many incase multiple account feature is added
