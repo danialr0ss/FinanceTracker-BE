@@ -56,11 +56,15 @@ export class PurchaseController {
 
   @Get(':id/:month/:year')
   @UseGuards(ValidUserGuard)
-  findAllByMonth(
+  async findAllByMonth(
+    @Headers('authorization') header: string,
     @Param('id', ParseIntPipe) id: number,
     @Param('month', ParseIntPipe) month: number,
     @Param('year', ParseIntPipe) year: number,
   ): Promise<PurchaseResponse> {
+    //check if user has permission to do action
+    await this.purchaseService.verifyPermission(header, id);
+
     if (month > 12) {
       throw new BadRequestException(
         'Month must be between 1 (January) to 12 (December)',
@@ -79,10 +83,13 @@ export class PurchaseController {
 
   @Get(':id/:category')
   @UseGuards(ValidUserGuard)
-  findAllByCategory(
+  async findAllByCategory(
+    @Headers('authorization') header: string,
     @Param('id', ParseIntPipe) id: number,
     @Param('category') category: string,
   ) {
+    //check if user has permission to do action
+    await this.purchaseService.verifyPermission(header, id);
     return this.purchaseService.findAllByCategory(id, category);
   }
 
@@ -95,15 +102,23 @@ export class PurchaseController {
       forbidNonWhitelisted: true,
     }),
   )
-  update(
+  async update(
+    @Headers('authorization') header: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePurchaseDto: UpdatePurchaseDto,
   ): Promise<Purchase> {
+    //check if user has permission to do action
+    await this.purchaseService.verifyPermission(header, id);
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Headers('authorization') header: string,
+  ) {
+    //check if user has permission to do action
+    await this.purchaseService.verifyPermission(header, id);
     return this.purchaseService.delete(id);
   }
 }
