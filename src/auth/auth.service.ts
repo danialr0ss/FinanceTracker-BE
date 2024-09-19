@@ -10,7 +10,7 @@ import { UserDto } from 'src/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { comparePassword, hashPassword } from 'src/utils/utils';
+import { comparePassword } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
 import { AccountService } from 'src/account/account.service';
 

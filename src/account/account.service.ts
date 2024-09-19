@@ -20,6 +20,7 @@ export class AccountService {
   ) {}
 
   async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
+    console.log('balance type, ', typeof newBalance);
     newBalance = new Decimal(newBalance); //explicitly make balance to decimal
     let totalAmount = new Decimal(0);
     const purchases = await this.purchaseService.findAllByAccountId(id);
@@ -131,15 +132,4 @@ export class AccountService {
     const { id: userId } = await this.authService.getJwtPayload(token);
     return this.findByUserId(userId);
   }
-
-  // find many incase multiple account feature is added
-  // async findByUserId(id: number) {
-  //   try {
-  //     return await prisma.account.findMany({ where: { user_id: id } });
-  //   } catch (err) {
-  //     throw new InternalServerErrorException(
-  //       'Something went wrong with Prisma',
-  //     );
-  //   }
-  // }
 }

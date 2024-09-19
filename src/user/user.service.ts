@@ -62,34 +62,4 @@ export class UserService {
     const { password, ...userWithoutPassword } = createdUser;
     return userWithoutPassword;
   }
-
-  // async getAllUsers(): Promise<User[] | null> {
-  //   return this.prisma.user.findMany();
-  // }
-
-  // async getUsersById(id: number): Promise<User | null> {
-  //   return this.prisma.user.findUnique({ where: { id: id } });
-  // }
-
-  // async updateName(id: number, name: string): Promise<User | null> {
-  //   const foundUser = await this.prisma.user.findUnique({ where: { id: id } });
-  //   if (!foundUser) {
-  //     throw new BadRequestException(`User with id:${id} does not exist`);
-  //   }
-
-  //   return this.prisma.user.update({ where: { id: id }, data: name });
-  // }
-
-  // async remove(id: number) {
-  //   const foundUser = await this.prisma.user.findUnique({ where: { id: id } });
-  //   if (!foundUser) {
-  //     throw new BadRequestException(`User with id : ${id} does not exist`);
-  //   }
-
-  //   return this.prisma.user.delete({ where: { id: id } }).catch(() => {
-  //     throw new InternalServerErrorException(
-  //       'Something went wrong with Prisma',
-  //     );
-  //   });
-  // }
 }

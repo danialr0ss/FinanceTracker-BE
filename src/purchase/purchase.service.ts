@@ -19,7 +19,6 @@ import { AccountService } from 'src/account/account.service';
 export class PurchaseService {
   constructor(
     @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
     @Inject(forwardRef(() => AccountService))
     private readonly accountService: AccountService,
   ) {}
