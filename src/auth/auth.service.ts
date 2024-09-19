@@ -63,22 +63,4 @@ export class AuthService {
       throw new UnauthorizedException(err);
     }
   }
-
-  // user can only CRUD records linked to their account
-  async checkUserAccess(
-    token: string,
-    requestAccountId: number,
-  ): Promise<boolean> {
-    const { id: userId } = await this.getJwtPayload(token);
-    const { id: responseAccountId } =
-      await this.accountService.findByUserId(userId);
-
-    if (responseAccountId !== requestAccountId) {
-      throw new ForbiddenException(
-        'CRUD can only be done to accounts linked to user',
-      );
-    }
-
-    return true;
-  }
 }

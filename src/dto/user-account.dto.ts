@@ -5,6 +5,7 @@ import { IsObject } from 'class-validator';
 export class UserAccountDto {
   @IsObject()
   user: UserDto;
+
   @IsObject()
   account: AccountDto;
 }

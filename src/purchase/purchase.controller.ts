@@ -44,10 +44,8 @@ export class PurchaseController {
     @Headers('authorization') headers,
   ): Promise<Purchase> {
     const token = headers.split(' ')[1];
-    const { id: userId } = await this.authService.getJwtPayload(token);
-    const { id: accountId } = await this.accountService.findByUserId(userId);
+    const { id: accountId } = await this.accountService.findAccount(token);
     this.accountService.recalculateBalance(accountId, createPurchaseDto.amount);
-
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }
 

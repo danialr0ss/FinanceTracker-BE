@@ -39,4 +39,12 @@ export class AccountController {
     const { user_id } = await this.findAccount(header);
     return this.accountService.generateMonthlyBreakdown(user_id);
   }
+
+  @Get('/get-daily-budget')
+  @UseGuards(ValidUserGuard)
+  async getDailyBudget(@Headers('authorization') header: string) {
+    const { id } = await this.findAccount(header);
+    const result = await this.accountService.calculateDailyBudget(id);
+    return { dailyBudget: result };
+  }
 }

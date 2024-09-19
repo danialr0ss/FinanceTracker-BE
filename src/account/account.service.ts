@@ -146,4 +146,19 @@ export class AccountService {
     const { id: userId } = await this.authService.getJwtPayload(token);
     return this.findByUserId(userId);
   }
+
+  // get the amount you can spend in a day with the current balance
+  async calculateDailyBudget(id: number): Promise<Number> {
+    const today = new Date();
+    const dayBefore = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 1,
+    );
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    // use day before so that you include "today" when getting the budget
+    const remainingDays = endOfMonth.getDate() - dayBefore.getDate();
+    const { balance } = await this.findById(id);
+    return Number(balance.dividedBy(remainingDays).toDecimalPlaces(2));
+  }
 }

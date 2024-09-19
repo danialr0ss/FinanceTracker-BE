@@ -2,7 +2,6 @@ import Decimal from 'decimal.js';
 import {
   IsDate,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
