@@ -17,7 +17,6 @@ import { PurchaseService } from './purchase.service';
 import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
 import { Purchase } from '@prisma/client';
 import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
-import { AuthService } from 'src/auth/auth.service';
 import { AccountService } from 'src/account/account.service';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
 import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
@@ -26,7 +25,6 @@ import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
 export class PurchaseController {
   constructor(
     private readonly purchaseService: PurchaseService,
-    private readonly authService: AuthService,
     private readonly accountService: AccountService,
   ) {}
 

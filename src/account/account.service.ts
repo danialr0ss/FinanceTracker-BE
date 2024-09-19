@@ -33,7 +33,9 @@ export class AccountService {
         data: { balance: newBalance },
       });
     } catch (err) {
-      throw new InternalServerErrorException(err);
+      throw new InternalServerErrorException(
+        'Something went wrong with prisma, failed to update account',
+      );
     }
   }
 
@@ -63,7 +65,7 @@ export class AccountService {
       return await prisma.account.findUnique({ where: { user_id: id } });
     } catch (err) {
       throw new InternalServerErrorException(
-        'Something went wrong with Prisma',
+        'Something went wrong with prisma, failed to retrieve account by user id',
       );
     }
   }
@@ -73,7 +75,7 @@ export class AccountService {
       return await prisma.account.findUnique({ where: { id: id } });
     } catch (err) {
       throw new InternalServerErrorException(
-        'Something went wrong with Prisma',
+        'Something went wrong with prisma, failed to retrieve account by id',
       );
     }
   }

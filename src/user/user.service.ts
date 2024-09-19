@@ -31,6 +31,7 @@ export class UserService {
   ): Promise<Omit<User, 'password'>> {
     const { name } = user;
 
+    // use chaining to keep in scope
     const foundUser = await prisma.user
       .findUnique({
         where: { name: name },
@@ -38,6 +39,7 @@ export class UserService {
       .catch((err) => {
         throw new InternalServerErrorException(
           'Something went wrong with Prisma, Error searching user',
+          err,
         );
       });
 
@@ -56,6 +58,7 @@ export class UserService {
       .catch((err) => {
         throw new InternalServerErrorException(
           'Something went wrong with Prisma, Error creating user',
+          err,
         );
       });
 
