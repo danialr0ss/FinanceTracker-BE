@@ -26,8 +26,6 @@ export class AccountService {
   ): Promise<Account> {
     const { balance } = await this.findById(id);
     const newBalance = balance.minus(purchaseAmount);
-    console.log(balance);
-    console.log(newBalance);
 
     try {
       return await prisma.account.update({
@@ -81,7 +79,7 @@ export class AccountService {
   }
 
   async generateMonthlyBreakdown(userId: number) {
-    const { id: accountId, balance } = await this.findByUserId(userId);
+    const { id: accountId } = await this.findByUserId(userId);
     const purchases = await this.purchaseService.findAllByAccountId(accountId);
     const result: Map<
       string, // monthYear
@@ -90,7 +88,6 @@ export class AccountService {
           string, //category
           { purchases: Purchase[]; total: Decimal }
         >;
-        balance: Decimal;
       }
     > = new Map();
 
@@ -123,17 +120,13 @@ export class AccountService {
               },
             ],
           ]),
-          balance: balance,
         });
       }
     }
-    console.log(result);
 
     // change to json format to send to user
     const formattedResult = [];
-
     for (const key of result.keys()) {
-      const balance = result.get(key).balance;
       const categories = result.get(key).purchases;
       for (const category of categories.keys()) {
         const monthlySpending = {
@@ -141,7 +134,6 @@ export class AccountService {
           category: category,
           purchases: categories.get(category).purchases,
           total: categories.get(category).total,
-          balance: balance,
         };
         formattedResult.push(monthlySpending);
       }
