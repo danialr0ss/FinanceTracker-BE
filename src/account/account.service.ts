@@ -19,19 +19,41 @@ export class AccountService {
     private readonly authService: AuthService,
   ) {}
 
-  async updateBalance(id: number, newBalance: Decimal): Promise<Account> {
-    console.log('balance type, ', typeof newBalance);
-    newBalance = new Decimal(newBalance); //explicitly make balance to decimal
-    let totalAmount = new Decimal(0);
-    const purchases = await this.purchaseService.findAllByAccountId(id);
-    for (const purchase of purchases) {
-      totalAmount = totalAmount.plus(purchase.amount);
-    }
-    const newTotal = newBalance.minus(totalAmount);
+  //recalculate when user adds a new purchase
+  async recalculateBalance(
+    id: number,
+    purchaseAmount: Decimal,
+  ): Promise<Account> {
+    const { balance } = await this.findById(id);
+    const newBalance = balance.minus(purchaseAmount);
+    console.log(balance);
+    console.log(newBalance);
+
     try {
       return await prisma.account.update({
         where: { id: id },
-        data: { balance: newTotal },
+        data: { balance: newBalance },
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  //update when user changes the balance amount of the account
+  async updateBalance(id: number, balance: Decimal) {
+    const purchases = await this.purchaseService.findAllByAccountId(id);
+
+    let totalAmount = new Decimal(0);
+    for (const purchase of purchases) {
+      totalAmount = totalAmount.plus(purchase.amount);
+    }
+
+    const newBalance = balance.minus(totalAmount);
+
+    try {
+      return await prisma.account.update({
+        where: { id: id },
+        data: { balance: newBalance },
       });
     } catch (err) {
       throw new InternalServerErrorException(err);

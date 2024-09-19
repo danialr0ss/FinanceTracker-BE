@@ -22,14 +22,18 @@ export class PurchaseService {
     @Inject(forwardRef(() => AccountService))
     private readonly accountService: AccountService,
   ) {}
-  async create(createPurchaseDto: CreatePurchaseDto): Promise<Purchase> {
+  async create(
+    createPurchaseDto: CreatePurchaseDto,
+    accountId: number,
+  ): Promise<Purchase> {
     const category = createPurchaseDto.category;
     try {
       return await prisma.purchase.create({
         data: {
           amount: createPurchaseDto.amount,
-          account_id: createPurchaseDto.account_id,
+          account_id: accountId,
           category: category[0].toUpperCase() + category.substring(1),
+          date: createPurchaseDto.date,
         },
       });
     } catch (err) {

@@ -39,21 +39,8 @@ export class AccountController {
       forbidNonWhitelisted: true,
     }),
   )
-  async update(
-    @Body() account: AccountDto,
-    @Headers('authorization') header: string,
-  ): Promise<Account> {
-    //validate if user has ownership
-    const token = header.split(' ')[1];
-    const { balance, user_id } = account;
-    const user = await this.authService.getJwtPayload(token);
-    if (user.id !== user_id) {
-      throw new UnauthorizedException(
-        'Updates can only be done to accounts linked to user',
-      );
-    }
-    const { id } = await this.accountService.findByUserId(user_id);
-
+  async update(@Headers('authorization') header: string): Promise<Account> {
+    const { id, balance } = await this.findAccount(header);
     return this.accountService.updateBalance(id, balance);
   }
 

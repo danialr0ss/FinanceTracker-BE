@@ -8,7 +8,5 @@ export class AccountDto {
   @IsPositive()
   balance: Decimal;
 
-  @IsNumber()
-  @IsNotEmpty()
-  user_id: number;
+  user_id?: number;
 }
