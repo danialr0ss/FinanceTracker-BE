@@ -1,28 +1,20 @@
 import {
   Controller,
   Headers,
-  Body,
   Patch,
   UseGuards,
-  ValidationPipe,
-  UsePipes,
-  UnauthorizedException,
   Get,
-  Param,
-  ParseIntPipe,
+  Body,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { Account } from '@prisma/client';
-import { AuthService } from 'src/auth/auth.service';
 import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
 import { AccountDto } from 'src/dto/account.dto';
+import Decimal from 'decimal.js';
 
 @Controller('account')
 export class AccountController {
-  constructor(
-    private readonly accountService: AccountService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly accountService: AccountService) {}
 
   @Get()
   @UseGuards(ValidUserGuard)
@@ -32,23 +24,19 @@ export class AccountController {
 
   @Patch('/update-balance')
   @UseGuards(ValidUserGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
-  async update(@Headers('authorization') header: string): Promise<Account> {
-    const { id, balance } = await this.findAccount(header);
+  async update(
+    @Headers('authorization') header: string,
+    @Body() accountDto: AccountDto,
+  ): Promise<Account> {
+    const balance = new Decimal(accountDto.balance);
+    const { id } = await this.findAccount(header);
     return this.accountService.updateBalance(id, balance);
   }
 
   @Get('/breakdown')
   @UseGuards(ValidUserGuard)
   async generateAccountBreakdown(@Headers('authorization') header: string) {
-    const token = header.split(' ')[1];
-    const { id: userId } = await this.authService.getJwtPayload(token);
-    return this.accountService.generateMonthlyBreakdown(userId);
+    const { user_id } = await this.findAccount(header);
+    return this.accountService.generateMonthlyBreakdown(user_id);
   }
 }
