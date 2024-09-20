@@ -19,7 +19,6 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     @Inject(forwardRef(() => AccountService))
-    private readonly accountService: AccountService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
