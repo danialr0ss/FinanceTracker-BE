@@ -39,10 +39,9 @@ export class PurchaseController {
   )
   async create(
     @Body() createPurchaseDto: CreatePurchaseDto,
-    @Headers('authorization') headers,
+    @Headers('authorization') header,
   ): Promise<Purchase> {
-    const token = headers.split(' ')[1];
-    const { id: accountId } = await this.accountService.findAccount(token);
+    const { id: accountId } = await this.accountService.findAccount(header);
     this.accountService.recalculateBalance(accountId, createPurchaseDto.amount);
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }

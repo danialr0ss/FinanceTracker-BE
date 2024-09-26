@@ -15,4 +15,8 @@ export class UpdatePurchaseDto {
   @Type(() => Date)
   @IsDate()
   date: Date;
+
+  @IsOptional()
+  @IsString()
+  label: string;
 }

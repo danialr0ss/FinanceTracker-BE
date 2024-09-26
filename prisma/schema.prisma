@@ -35,4 +35,5 @@ model Purchase{
   amount Decimal @db.Decimal(10, 2) 
   date DateTime @default(now())
   category String 
+  label String @default("")
 }

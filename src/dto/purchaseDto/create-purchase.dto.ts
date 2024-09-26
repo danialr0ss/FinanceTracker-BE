@@ -16,6 +16,10 @@ export class CreatePurchaseDto {
   @IsNotEmpty()
   category: string;
 
+  @IsString()
+  @IsNotEmpty()
+  label: string;
+
   @IsDate()
   @IsOptional()
   date: Date;

@@ -12,13 +12,11 @@ import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
 import prisma from 'src/prisma/prisma.service';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
-import { AuthService } from 'src/auth/auth.service';
 import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class PurchaseService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
     @Inject(forwardRef(() => AccountService))
     private readonly accountService: AccountService,
   ) {}
@@ -26,14 +24,14 @@ export class PurchaseService {
     createPurchaseDto: CreatePurchaseDto,
     accountId: number,
   ): Promise<Purchase> {
-    const category = createPurchaseDto.category;
     try {
       return await prisma.purchase.create({
         data: {
           amount: createPurchaseDto.amount,
           account_id: accountId,
-          category: category[0].toUpperCase() + category.substring(1),
+          category: createPurchaseDto.category,
           date: createPurchaseDto.date,
+          label: createPurchaseDto.label,
         },
       });
     } catch (err) {
@@ -59,7 +57,6 @@ export class PurchaseService {
     try {
       return await prisma.purchase.findUnique({ where: { id: id } });
     } catch (err) {
-      console.log(err);
       throw new InternalServerErrorException(
         'Something went wrong with Prisma',
       );

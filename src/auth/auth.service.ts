@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -12,13 +11,11 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { comparePassword } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
-import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    @Inject(forwardRef(() => AccountService))
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -42,11 +39,10 @@ export class AuthService {
     delete foundUser.password;
 
     const payload = { sub: foundUser.id, user: foundUser };
-
     try {
       return this.jwtService.signAsync(payload);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -58,8 +54,8 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
       return user;
-    } catch (err) {
-      throw new UnauthorizedException(err);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
     }
   }
 }
