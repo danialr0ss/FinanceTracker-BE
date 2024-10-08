@@ -3,12 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { UserModule } from 'src/user/user.module';
 import { AccountModule } from 'src/account/account.module';
 
 @Module({
   imports: [
-    UserModule,
     forwardRef(() => AccountModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
