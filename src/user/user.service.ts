@@ -44,7 +44,7 @@ export class UserService {
       });
 
     if (foundUser) {
-      throw new BadRequestException(`User with name : ${name} already exists`);
+      throw new BadRequestException(`Username ${name} already taken`);
     }
 
     user.password = await hashPassword(user.password);
