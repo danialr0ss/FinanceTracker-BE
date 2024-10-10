@@ -5,22 +5,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
+import { Request } from 'express';
 
 @Injectable()
 export class ValidUserGuard implements CanActivate {
   constructor(private readonly authService: AuthService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const authHeader = request.headers['authorization'];
+    const token = request.cookies['token'];
 
-    if (!authHeader) {
+    if (!token) {
       throw new UnauthorizedException(
         'You do not have the required permissions.',
       );
     }
-
-    // get token part of the header
-    const token = authHeader.split(' ')[1];
 
     try {
       //if payload can be received means the token is valid

@@ -143,8 +143,7 @@ export class AccountService {
     return formattedResult;
   }
 
-  async findAccount(authHeader: string) {
-    const token = authHeader.split(' ')[1];
+  async findAccount(token: string) {
     const { id: userId } = await this.authService.getJwtPayload(token);
     return this.findByUserId(userId);
   }
