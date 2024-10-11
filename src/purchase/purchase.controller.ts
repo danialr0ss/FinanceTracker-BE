@@ -42,7 +42,7 @@ export class PurchaseController {
     @Headers('authorization') header,
   ): Promise<Purchase> {
     const { id: accountId } = await this.accountService.findAccount(header);
-    this.accountService.recalculateBalance(accountId, createPurchaseDto.amount);
+    this.accountService.recalculateBudget(accountId, createPurchaseDto.amount);
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }
 

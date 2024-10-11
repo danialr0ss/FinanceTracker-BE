@@ -22,7 +22,7 @@ model User{
 
 model Account{
   id Int @id @default(autoincrement())
-  balance Decimal @db.Decimal(10, 2) 
+  budget Decimal @db.Decimal(10, 2) @default(1000)
   user User @relation(fields: [user_id],references: [id])
   user_id Int @unique
   purchase Purchase[] 

@@ -100,7 +100,7 @@ export class AuthService {
       .create({
         data: {
           ...user,
-          account: { create: { balance: account.balance.toString() } },
+          account: { create: { budget: account.budget.toString() } },
         },
       })
       .catch((err) => {

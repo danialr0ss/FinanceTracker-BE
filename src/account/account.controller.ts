@@ -19,16 +19,17 @@ import { Request } from 'express';
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Patch('/update-balance')
+  @Patch('/update-budget')
   @UseGuards(ValidUserGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     @Req() request: Request,
     @Body() accountDto: AccountDto,
   ): Promise<Account> {
     const token = request.cookies['token'];
     const { id } = await this.accountService.findAccount(token);
-    const balance = new Decimal(accountDto.balance);
-    return this.accountService.updateBalance(id, balance);
+    const budget = new Decimal(accountDto.budget);
+    return this.accountService.updateBudget(id, budget);
   }
 
   @Get('/breakdown')

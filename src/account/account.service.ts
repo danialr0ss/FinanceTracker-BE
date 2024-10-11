@@ -20,17 +20,17 @@ export class AccountService {
   ) {}
 
   //recalculate when user adds a new purchase
-  async recalculateBalance(
+  async recalculateBudget(
     id: number,
     purchaseAmount: Decimal,
   ): Promise<Account> {
-    const { balance } = await this.findById(id);
-    const newBalance = balance.minus(purchaseAmount);
+    const { budget } = await this.findById(id);
+    const newBudget = budget.minus(purchaseAmount);
 
     try {
       return await prisma.account.update({
         where: { id: id },
-        data: { balance: newBalance },
+        data: { budget: newBudget },
       });
     } catch (err) {
       throw new InternalServerErrorException(
@@ -39,8 +39,8 @@ export class AccountService {
     }
   }
 
-  //update when user changes the balance amount of the account
-  async updateBalance(id: number, balance: Decimal) {
+  //update when user changes the budget amount of the account
+  async updateBudget(id: number, budget: Decimal) {
     const purchases = await this.purchaseService.findAllByAccountId(id);
 
     let totalAmount = new Decimal(0);
@@ -48,12 +48,12 @@ export class AccountService {
       totalAmount = totalAmount.plus(purchase.amount);
     }
 
-    const newBalance = balance.minus(totalAmount);
+    const newBudget = budget.minus(totalAmount);
 
     try {
       return await prisma.account.update({
         where: { id: id },
-        data: { balance: newBalance },
+        data: { budget: newBudget },
       });
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -148,7 +148,7 @@ export class AccountService {
     return this.findByUserId(userId);
   }
 
-  // get the amount you can spend in a day with the current balance
+  // get the amount you can spend in a day with the current budget
   async calculateDailyBudget(id: number): Promise<Number> {
     const today = new Date();
     const dayBefore = new Date(
@@ -159,7 +159,7 @@ export class AccountService {
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     // use day before so that you include "today" when getting the budget
     const remainingDays = endOfMonth.getDate() - dayBefore.getDate();
-    const { balance } = await this.findById(id);
-    return Number(balance.dividedBy(remainingDays).toDecimalPlaces(2));
+    const { budget } = await this.findById(id);
+    return Number(budget.dividedBy(remainingDays).toDecimalPlaces(2));
   }
 }
