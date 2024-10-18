@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserDto } from 'src/dto/user.dto';
+import { UserDto } from 'src/dto/usersDto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { comparePassword } from 'src/utils/utils';
@@ -112,5 +112,22 @@ export class AuthService {
 
     const { password, ...userWithoutPassword } = createdUser;
     return userWithoutPassword;
+  }
+
+  async changePassword(user: User): Promise<Omit<User, 'password'>> {
+    const updatedUser = await prisma.user
+      .update({
+        where: {
+          name: user.name,
+        },
+        data: {
+          password: await hashPassword(user.password),
+        },
+      })
+      .catch((err) => {
+        throw new InternalServerErrorException(err);
+      });
+    delete updatedUser.password;
+    return updatedUser;
   }
 }
