@@ -142,9 +142,17 @@ export class PurchaseService {
   }
 
   // user can only update and delete purchase in thier account
-  async verifyAccess(header: string, purchaseId: number) {
-    const { id: userAccountId } = await this.accountService.findAccount(header);
-    const { account_id: purchaseAccountId } = await this.findById(purchaseId);
+  async verifyAccess(token: string, purchaseId: number) {
+    const { id: userAccountId } = await this.accountService
+      .findAccount(token)
+      .catch((err) => {
+        throw new InternalServerErrorException(err.message);
+      });
+    const { account_id: purchaseAccountId } = await this.findById(
+      purchaseId,
+    ).catch((err) => {
+      throw new InternalServerErrorException(err.message);
+    });
 
     if (userAccountId !== purchaseAccountId) {
       throw new ForbiddenException(

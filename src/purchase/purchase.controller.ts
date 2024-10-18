@@ -12,6 +12,7 @@ import {
   Headers,
   ParseIntPipe,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { PurchaseService } from './purchase.service';
 import { CreatePurchaseDto } from 'src/dto/purchaseDto/create-purchase.dto';
@@ -20,6 +21,7 @@ import { ValidUserGuard } from 'src/guards/valid-user/valid-user.guard';
 import { AccountService } from 'src/account/account.service';
 import { PurchaseResponse } from 'src/common/interfaces/purchasesResponse';
 import { UpdatePurchaseDto } from 'src/dto/purchaseDto/update-purchase.dto';
+import { Request } from 'express';
 
 @Controller('purchase')
 export class PurchaseController {
@@ -39,9 +41,10 @@ export class PurchaseController {
   )
   async create(
     @Body() createPurchaseDto: CreatePurchaseDto,
-    @Headers('authorization') header,
+    @Req() req: Request,
   ): Promise<Purchase> {
-    const { id: accountId } = await this.accountService.findAccount(header);
+    const token = req.cookies['token'];
+    const { id: accountId } = await this.accountService.findAccount(token);
     this.accountService.recalculateBudget(accountId, createPurchaseDto.amount);
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }
@@ -49,7 +52,7 @@ export class PurchaseController {
   @Get(':month/:year')
   @UseGuards(ValidUserGuard)
   async findAllByMonth(
-    @Headers('authorization') header: string,
+    @Req() req: Request,
     @Param('month', ParseIntPipe) month: number,
     @Param('year', ParseIntPipe) year: number,
   ): Promise<PurchaseResponse> {
@@ -66,17 +69,19 @@ export class PurchaseController {
       );
     }
 
-    const { id: accountId } = await this.accountService.findAccount(header);
+    const token = req.cookies['token'];
+    const { id: accountId } = await this.accountService.findAccount(token);
     return this.purchaseService.findAllByMonth(accountId, month, year);
   }
 
   @Get(':category')
   @UseGuards(ValidUserGuard)
   async findAllByCategory(
-    @Headers('authorization') header: string,
+    @Req() req: Request,
     @Param('category') category: string,
   ) {
-    const { id: accountId } = await this.accountService.findAccount(header);
+    const token = req.cookies['token'];
+    const { id: accountId } = await this.accountService.findAccount(token);
     return this.purchaseService.findAllByCategory(accountId, category);
   }
 
@@ -90,21 +95,20 @@ export class PurchaseController {
     }),
   )
   async update(
-    @Headers('authorization') header: string,
+    @Req() req: Request,
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePurchaseDto: UpdatePurchaseDto,
   ): Promise<Purchase> {
-    await this.purchaseService.verifyAccess(header, id);
+    const token = req.cookies['token'];
+    await this.purchaseService.verifyAccess(token, id);
     return this.purchaseService.update(id, updatePurchaseDto);
   }
 
   @Delete(':id')
   @UseGuards(ValidUserGuard)
-  async remove(
-    @Param('id', ParseIntPipe) id: number,
-    @Headers('authorization') header: string,
-  ) {
-    await this.purchaseService.verifyAccess(header, id);
+  async remove(@Req() req: Request, @Param('id', ParseIntPipe) id: number) {
+    const token = req.cookies['token'];
+    await this.purchaseService.verifyAccess(token, id);
     return this.purchaseService.delete(id);
   }
 }
