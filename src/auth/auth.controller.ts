@@ -49,7 +49,12 @@ export class AuthController {
   @Post('/signout')
   @UseGuards(ValidUserGuard)
   async signout(@Res() res: Response): Promise<Response> {
-    await this.authService.signout(res);
+    res.cookie('token', '', {
+      expires: new Date(0),
+      sameSite: 'lax',
+      httpOnly: true,
+      path: '/',
+    });
     return res.status(200).json({ message: 'Signout succesful' });
   }
 

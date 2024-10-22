@@ -131,16 +131,4 @@ export class AuthService {
     delete updatedUser.password;
     return updatedUser;
   }
-
-  async signout(res: Response) {
-    try {
-      res.cookie('token', '', {
-        expires: new Date(0),
-        httpOnly: true,
-        path: '/',
-      });
-    } catch (err) {
-      throw new InternalServerErrorException('Error Occured, ', err);
-    }
-  }
 }
