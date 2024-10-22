@@ -12,6 +12,7 @@ import prisma from 'src/prisma/prisma.service';
 import { AccountDto } from 'src/dto/account.dto';
 import { hashPassword } from 'src/utils/utils';
 import { BadRequestException } from '@nestjs/common';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -129,5 +130,17 @@ export class AuthService {
       });
     delete updatedUser.password;
     return updatedUser;
+  }
+
+  async signout(res: Response) {
+    try {
+      res.cookie('token', '', {
+        expires: new Date(0),
+        httpOnly: true,
+        path: '/',
+      });
+    } catch (err) {
+      throw new InternalServerErrorException('Error Occured, ', err);
+    }
   }
 }

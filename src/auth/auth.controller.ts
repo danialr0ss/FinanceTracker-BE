@@ -45,6 +45,14 @@ export class AuthController {
       userAndAccount.account,
     );
   }
+
+  @Post('/signout')
+  @UseGuards(ValidUserGuard)
+  async signout(@Res() res: Response): Promise<Response> {
+    await this.authService.signout(res);
+    return res.status(200).json({ message: 'Signout succesful' });
+  }
+
   @Post('/verify')
   @UsePipes(new ValidationPipe({ transform: true }))
   async verify(@Body() token: Token, @Res() res: Response): Promise<Response> {
