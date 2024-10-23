@@ -45,7 +45,6 @@ export class PurchaseController {
   ): Promise<Purchase> {
     const token = req.cookies['token'];
     const { id: accountId } = await this.accountService.findAccount(token);
-    this.accountService.recalculateBudget(accountId, createPurchaseDto.amount);
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }
 
