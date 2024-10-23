@@ -92,13 +92,27 @@ export class PurchaseService {
     }
   }
 
-  async findAllByCategory(
+  async find(
     accountId: number,
     category: string,
+    month: number,
+    year: number,
   ): Promise<PurchaseResponse> {
     try {
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 1);
+
+      const where: any = { account_id: accountId };
+
+      if (category) {
+        where.category = category;
+      }
+
+      if (month && year) {
+        where.date = { gte: startDate, lt: endDate };
+      }
       const purchases = await prisma.purchase.findMany({
-        where: { account_id: accountId, category: category },
+        where,
       });
 
       return {

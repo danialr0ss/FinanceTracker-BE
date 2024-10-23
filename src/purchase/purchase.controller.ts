@@ -9,7 +9,7 @@ import {
   ValidationPipe,
   BadRequestException,
   UseGuards,
-  Headers,
+  Query,
   ParseIntPipe,
   Delete,
   Req,
@@ -49,40 +49,29 @@ export class PurchaseController {
     return await this.purchaseService.create(createPurchaseDto, accountId);
   }
 
-  @Get(':month/:year')
+  @Get('')
   @UseGuards(ValidUserGuard)
-  async findAllByMonth(
+  async find(
     @Req() req: Request,
-    @Param('month', ParseIntPipe) month: number,
-    @Param('year', ParseIntPipe) year: number,
+    @Query('month') month: number,
+    @Query('year') year: number,
+    @Query('category') category: string,
   ): Promise<PurchaseResponse> {
-    if (month > 12) {
+    if (month && (month < 1 || month > 12)) {
       throw new BadRequestException(
         'Month must be between 1 (January) to 12 (December)',
       );
     }
 
     const currYear = new Date().getFullYear();
-    if (year > currYear) {
+    if (year && year > currYear) {
       throw new BadRequestException(
         `Year must be this year (${currYear}) or earlier`,
       );
     }
-
     const token = req.cookies['token'];
     const { id: accountId } = await this.accountService.findAccount(token);
-    return this.purchaseService.findAllByMonth(accountId, month, year);
-  }
-
-  @Get(':category')
-  @UseGuards(ValidUserGuard)
-  async findAllByCategory(
-    @Req() req: Request,
-    @Param('category') category: string,
-  ) {
-    const token = req.cookies['token'];
-    const { id: accountId } = await this.accountService.findAccount(token);
-    return this.purchaseService.findAllByCategory(accountId, category);
+    return this.purchaseService.find(accountId, category, month, year);
   }
 
   @Patch(':id')
