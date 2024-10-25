@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserDto } from 'src/dto/usersDto/user.dto';
+import { UserDto } from 'src/dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { comparePassword } from 'src/utils/utils';
@@ -12,7 +12,6 @@ import prisma from 'src/prisma/prisma.service';
 import { AccountDto } from 'src/dto/account.dto';
 import { hashPassword } from 'src/utils/utils';
 import { BadRequestException } from '@nestjs/common';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {

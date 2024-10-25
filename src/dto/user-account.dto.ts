@@ -1,4 +1,4 @@
-import { UserDto } from './usersDto/user.dto';
+import { UserDto } from './user.dto';
 import { AccountDto } from './account.dto';
 import { IsObject } from 'class-validator';
 

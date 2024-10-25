@@ -11,7 +11,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserDto } from 'src/dto/usersDto/user.dto';
+import { UserDto } from 'src/dto/user.dto';
 import { UserAccountDto } from 'src/dto/user-account.dto';
 import { User } from '@prisma/client';
 import { Response } from 'express';
