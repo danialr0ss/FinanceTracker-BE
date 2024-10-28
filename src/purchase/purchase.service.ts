@@ -63,46 +63,22 @@ export class PurchaseService {
     }
   }
 
-  async findAllByMonth(
-    accountId: number,
-    month: number,
-    year: number,
-  ): Promise<PurchaseResponse> {
-    const startDate = new Date(year, month - 1, 1); // Month is 0-indexed
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999);
-
-    try {
-      const purchases = await prisma.purchase.findMany({
-        where: {
-          account_id: accountId,
-          date: { gte: startDate, lte: endDate },
-        },
-      });
-      return {
-        purchases: purchases,
-        total: purchases.reduce(
-          (accumulator, item) => item.amount.plus(accumulator),
-          new Decimal(0),
-        ),
-      };
-    } catch (err) {
-      throw new InternalServerErrorException(
-        'Something went wrong with Prisma',
-      );
-    }
-  }
-
   async find(
     accountId: number,
     category: string,
     month: number,
     year: number,
+    label: string,
   ): Promise<PurchaseResponse> {
     try {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 1);
 
       const where: any = { account_id: accountId };
+
+      if (label) {
+        where.label = label;
+      }
 
       if (category) {
         where.category = category;

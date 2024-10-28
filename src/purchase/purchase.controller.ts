@@ -55,6 +55,7 @@ export class PurchaseController {
     @Query('month') month: number,
     @Query('year') year: number,
     @Query('category') category: string,
+    @Query('label') label: string,
   ): Promise<PurchaseResponse> {
     if (month && (month < 1 || month > 12)) {
       throw new BadRequestException(
@@ -70,7 +71,7 @@ export class PurchaseController {
     }
     const token = req.cookies['token'];
     const { id: accountId } = await this.accountService.findAccount(token);
-    return this.purchaseService.find(accountId, category, month, year);
+    return this.purchaseService.find(accountId, category, month, year, label);
   }
 
   @Patch(':id')
