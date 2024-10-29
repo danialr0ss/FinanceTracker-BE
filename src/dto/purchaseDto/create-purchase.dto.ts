@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePurchaseDto {
   @IsPositive()
@@ -22,5 +23,6 @@ export class CreatePurchaseDto {
 
   @IsDate()
   @IsOptional()
+  @Type(() => Date)
   date: Date;
 }

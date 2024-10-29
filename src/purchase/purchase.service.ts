@@ -89,6 +89,9 @@ export class PurchaseService {
       }
       const purchases = await prisma.purchase.findMany({
         where,
+        orderBy: {
+          date: 'desc',
+        },
       });
 
       return {
