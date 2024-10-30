@@ -14,7 +14,6 @@ export class AccountService {
     private readonly authService: AuthService,
   ) {}
 
-  //recalculate when user adds a new purchase
   async findByUserId(id: number): Promise<Account> {
     try {
       return await prisma.account.findUnique({ where: { user_id: id } });
